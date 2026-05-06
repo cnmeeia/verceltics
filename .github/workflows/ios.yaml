@@ -15,7 +15,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: List project files
-        run: find . -maxdepth 3 \\( -name "*.xcodeproj" -o -name "*.xcworkspace" \\) -print
+        run: |
+          /usr/bin/find . -maxdepth 3 -name '*.xcodeproj' -print
+          /usr/bin/find . -maxdepth 3 -name '*.xcworkspace' -print
 
       - name: List simulators
         run: xcrun simctl list devices available
