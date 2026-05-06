@@ -14,12 +14,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Show files
+        run: ls -la
+
       - name: Show Xcode
         run: xcodebuild -version
 
       - name: Build for simulator
         run: |
+          cd ios
           xcodebuild \
+            -project "verceltics.xcodeproj" \
             -scheme "verceltics" \
             -destination 'platform=iOS Simulator,name=iPhone 15' \
             -configuration Debug \
