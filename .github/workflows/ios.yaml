@@ -14,24 +14,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Show files
-        run: ls -la
+      - name: List project files
+        run: find . -maxdepth 3 \\( -name "*.xcodeproj" -o -name "*.xcworkspace" \\) -print
 
-      - name: Show Xcode
-        run: xcodebuild -version
+      - name: List simulators
+        run: xcrun simctl list devices available
 
       - name: Build for simulator
         run: |
-          cd ios
-                - name: Build for simulator
-        run: |
-          cd ios
           xcodebuild \
             -project "verceltics.xcodeproj" \
             -scheme "verceltics" \
-            -destination 'generic/platform=iOS Simulator' \
+            -destination 'platform=iOS Simulator,name=iPhone SE (3rd generation)' \
             -configuration Debug \
-            -derivedDataPath build \
             build
 
       - name: Find built app
@@ -39,7 +34,6 @@ jobs:
         run: |
           APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -path "*Build/Products/Debug-iphonesimulator/*.app" | head -n 1)
           echo "app_path=$APP_PATH" >> $GITHUB_OUTPUT
-          echo "Found app: $APP_PATH"
 
       - name: Zip app
         run: |
