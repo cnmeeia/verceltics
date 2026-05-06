@@ -1,0 +1,45 @@
+name: iOS Unsigned Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show Xcode
+        run: xcodebuild -version
+
+      - name: Build for simulator
+        run: |
+          xcodebuild \
+            -scheme "verceltics" \
+            -destination 'platform=iOS Simulator,name=iPhone 15' \
+            -configuration Debug \
+            build
+
+      - name: Find built app
+        id: find_app
+        run: |
+          APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -path "*Build/Products/Debug-iphonesimulator/*.app" | head -n 1)
+          echo "app_path=$APP_PATH" >> $GITHUB_OUTPUT
+          echo "Found app: $APP_PATH"
+
+      - name: Zip app
+        run: |
+          ditto -c -k --sequesterRsrc --keepParent "${{ steps.find_app.outputs.app_path }}" verceltics-simulator.app.zip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: verceltics-simulator-build
+          path: verceltics-simulator.app.zip
+          if-no-files-found: error
+          retention-days: 7
