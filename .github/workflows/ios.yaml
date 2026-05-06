@@ -24,6 +24,7 @@ jobs:
 
       - name: Build for simulator
         run: |
+          cd ios
           xcodebuild \
             -project "verceltics.xcodeproj" \
             -scheme "verceltics" \
